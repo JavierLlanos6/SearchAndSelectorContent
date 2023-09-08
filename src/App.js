@@ -95,9 +95,9 @@ function App() {
             <p>Name: {item.artistName}</p>
             <p>Song: {item.collectionName}</p>
             <img src={item.artworkUrl100} alt={item.artistName} />
-            {item.trackPrice && item.trackPrice.length > 0 ? null : (
+            {item.trackPrice && item.trackPrice !== 0 ? (
               <p>Price: {item.trackPrice}</p>
-            )}
+            ) : null}
           </div>
         ))}
     </div>
