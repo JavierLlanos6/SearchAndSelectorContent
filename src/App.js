@@ -48,30 +48,30 @@ function App() {
       });
   };
 
-  const searchNameArtist = async (search) => {
-    if (search === "") {
-      return null;
-    }
-    try {
-      const response = await fetch(
-        `https://itunes.apple.com/search?term=${artistName}`
-      );
-      const json = await response.json();
-      const artists = json.Search;
+  // const searchNameArtist = async (search) => {
+  //   if (search === "") {
+  //     return null;
+  //   }
+  //   try {
+  //     const response = await fetch(
+  //       `https://itunes.apple.com/search?term=${artistName}`
+  //     );
+  //     const json = await response.json();
+  //     const artists = json.Search;
 
-      return artists?.map((artist) => ({
-        artistName: artist.artistName,
-        collection: artist.collectionName,
-        track: artist.trackName,
-        collectionCensored: artist.collectionCensoredName,
-        trackCensored: artist.t.rackCensoredName,
-        type: artist.kind,
-        image: artist.artworkUrl30,
-      }));
-    } catch (e) {
-      throw new Error("Error searching artist");
-    }
-  };
+  //     return artists?.map((artist) => ({
+  //       artistName: artist.artistName,
+  //       collection: artist.collectionName,
+  //       track: artist.trackName,
+  //       collectionCensored: artist.collectionCensoredName,
+  //       trackCensored: artist.t.rackCensoredName,
+  //       type: artist.kind,
+  //       image: artist.artworkUrl30,
+  //     }));
+  //   } catch (e) {
+  //     throw new Error("Error searching artist");
+  //   }
+  // };
 
   return (
     <div className="App">
@@ -95,10 +95,10 @@ function App() {
             <p>Name: {item.artistName}</p>
             <p>Song: {item.collectionName}</p>
             <img src={item.artworkUrl30} alt={item.artistName} />
+            {item.trackPrice && item.trackPrice.length > 0 ? null : (
+              <p>Price: {item.trackPrice}</p>
+            )}
           </div>
-          // {if(item.collectionPrice.lenght > 0){
-          //   <p>Price: {item.collectionPrice}</p>
-          // }else}
         ))}
     </div>
   );
