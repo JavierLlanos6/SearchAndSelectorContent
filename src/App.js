@@ -26,8 +26,15 @@ function App() {
     { value: "song", label: "Music" },
     { value: "book", label: "book" },
     { value: "album", label: "album" },
-    { value: "tvShow", label: "TvShow" },
-    //  coached-audio, feature-movie, interactive- booklet, music-video, pdf podcast, podcast-episode, software-package, song, tv- episode, artistFor example: song.
+    { value: "coached-audio", label: "coached-audio" },
+    { value: "feature-movie", label: "feature-movie" },
+    { value: "interactive-booklet", label: "interactive-booklet" },
+    { value: "music-video", label: "music-video" },
+    { value: "pdf podcast", label: "pdf podcast" },
+    { value: "podcast-episode", label: "podcast-episode" },
+    { value: "software-package", label: "software-package" },
+    { value: "tv-episode", label: "tv-episode" },
+    { value: "artistFor", label: "artistFor" },
   ];
 
   const fetchData = () => {
@@ -47,6 +54,10 @@ function App() {
         console.error(`Error getting data:`, error);
       });
   };
+
+  function NoResult() {
+    return <p>There are not results for your search</p>;
+  }
 
   // const searchNameArtist = async (search) => {
   //   if (search === "") {
@@ -91,13 +102,15 @@ function App() {
       {data &&
         data.map((item, index) => (
           <div key={index}>
-            <h2>About your artist</h2>
-            <p>Name: {item.artistName}</p>
-            <p>Song: {item.collectionName}</p>
-            <img src={item.artworkUrl100} alt={item.artistName} />
-            {item.trackPrice && item.trackPrice !== 0 ? (
-              <p>Price: {item.trackPrice}</p>
-            ) : null}
+            <ul className="artistList">
+              <h2>About your artist</h2>
+              <p>Name: {item.artistName}</p>
+              <p>Song: {item.collectionName}</p>
+              <img src={item.artworkUrl100} alt={item.artistName} />
+              {item.trackPrice && item.trackPrice !== 0 ? (
+                <p>Price: {item.trackPrice}</p>
+              ) : null}
+            </ul>
           </div>
         ))}
     </div>
