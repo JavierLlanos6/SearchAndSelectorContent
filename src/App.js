@@ -107,7 +107,7 @@ function App() {
         ) : artist && artist.length > 0 ? (
           <Artist artists={artist} />
         ) : (
-          <p>No results found</p>
+          search.length > 0 && <p>No results found</p>
         )}
       </main>
     </div>
