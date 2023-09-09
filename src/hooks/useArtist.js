@@ -8,18 +8,19 @@ export function useArtist({ search, sort }) {
   const previousSearch = useRef(search);
 
   const getArtist = useMemo(() => {
-    return async ({ search }) => {
-      if (search === previousSearch.current) return;
-      try {
-        setLoading(true);
-        setError(null);
-        previousSearch.current = search;
-        const newArtist = await searchArtist({ search });
-        setArtist(newArtist);
-      } catch (e) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
+    return async ({ search, type }) => {
+      if (search === previousSearch.current || !type) {
+        try {
+          setLoading(true);
+          setError(null);
+          previousSearch.current = search;
+          const newArtist = await searchArtist({ search, type });
+          setArtist(newArtist);
+        } catch (e) {
+          setError(e.message);
+        } finally {
+          setLoading(false);
+        }
       }
     };
   }, [search]);

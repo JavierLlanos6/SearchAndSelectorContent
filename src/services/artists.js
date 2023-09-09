@@ -1,13 +1,17 @@
 export const searchArtist = async ({ search, type }) => {
-  if (search === "") return null;
+  console.log("search and type", search, type);
+  if (search === "") return [];
 
   try {
     const response = await fetch(
-      `https://itunes.apple.com/search?term=${search}&entity=song`
+      `https://itunes.apple.com/search?term=${search}&entity=${type}`
     );
+
     const json = await response.json();
+
     console.log("API Response:", json);
-    const artist = json.results;
+    const artist = json.results || [];
+    console.log("try to error");
 
     return artist?.map((artists) => ({
       name: artists.artistName,

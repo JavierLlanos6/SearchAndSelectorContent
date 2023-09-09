@@ -4,7 +4,7 @@ function ListOfArtist({ artists }) {
       {artists &&
         artists.map((artists, index) => (
           <li className="artist" key={index}>
-            <p>Name: {artists.name}</p>
+            <p>Name:{artists.name}</p>
             <p>Song: {artists.song}</p>
             <img src={artists.image} alt={artists.name} />
             {artists.price && artists.price !== 0 ? (

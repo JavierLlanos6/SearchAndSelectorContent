@@ -40,9 +40,9 @@ function App() {
   const { search, updateSearch, error } = useSearch();
   const { artist, loading, getArtist } = useArtist({ search, sort });
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    getArtist({ search, type: setType });
+    await getArtist({ search, type });
   };
 
   const handleSort = () => {
@@ -93,7 +93,7 @@ function App() {
             className="display1"
             options={options}
             value={options.find((option) => option.value === type)}
-            onChange={(selectedOption) => setType(selectedOption.type)}
+            onChange={(selectedOption) => setType(selectedOption.value)}
           />
           <input type="checkbox" onChange={handleSort} checked={sort} />
           <button type="submit"> Search </button>
