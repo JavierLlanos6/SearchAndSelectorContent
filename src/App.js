@@ -1,24 +1,67 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
+import { useArtist } from "./hooks/useArtist";
+import { Artist } from "./components/Artist";
+import debounce from "just-debounce-it";
+
+function useSearch() {
+  const [search, updateSearch] = useState("");
+  const [error, setError] = useState(null);
+  const isFirstInput = useRef(true);
+
+  useEffect(() => {
+    if (isFirstInput.current) {
+      isFirstInput.current = search === "";
+      return;
+    }
+
+    if (search === "") {
+      setError("You can not search for empty artists");
+      return;
+    }
+
+    if (search.match(/^\d+$/)) {
+      setError("You can not search for an artist with a number");
+      return;
+    }
+
+    if (search.length < 3) {
+      setError("Search must be at least 3 characters");
+      return;
+    }
+    setError(null);
+  }, [search]);
+  return { search, updateSearch, error };
+}
 
 function App() {
-  const [artistName, setArtistName] = useState("");
-  const [type, setType] = useState("");
-  const [data, setData] = useState(null);
+  const [sort, setSort] = useState(false);
 
-  const handleArtistNameChange = (e) => {
-    setArtistName(e.target.value);
+  const [type, setType] = useState("");
+
+  const { search, updateSearch, error } = useSearch();
+  const { artist, loading, getArtist } = useArtist({ search, sort });
+  const debouncedGetArtists = useCallback(
+    debounce((search) => {
+      getArtist({ search });
+    }, 300),
+    []
+  );
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    getArtist({ search, type: setType });
   };
 
-  const handleTypeChange = (selectedType) => {
-    if (data) {
-      console.log(selectedType);
-      const newData = data.filter((item) => item.kind === selectedType.value);
-      console.log(newData);
-      setData(newData);
-    }
-    setType(selectedType.value);
+  const handleSort = () => {
+    setSort(!sort);
+  };
+
+  const handleChange = (event) => {
+    const newSearch = event.target.value;
+    updateSearch(newSearch);
+    debouncedGetArtists(newSearch);
   };
 
   const options = [
@@ -37,82 +80,46 @@ function App() {
     { value: "artistFor", label: "artistFor" },
   ];
 
-  const fetchData = () => {
-    const apiUrl = `https://itunes.apple.com/search?term=${artistName}&entity=${type}`;
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error on network: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        console.log(responseData.results);
-        setData(responseData.results);
-      })
-      .catch((error) => {
-        console.error(`Error getting data:`, error);
-      });
-  };
-
   function NoResult() {
     return <p>There are not results for your search</p>;
   }
 
-  // const searchNameArtist = async (search) => {
-  //   if (search === "") {
-  //     return null;
-  //   }
-  //   try {
-  //     const response = await fetch(
-  //       `https://itunes.apple.com/search?term=${artistName}`
-  //     );
-  //     const json = await response.json();
-  //     const artists = json.Search;
-
-  //     return artists?.map((artist) => ({
-  //       artistName: artist.artistName,
-  //       collection: artist.collectionName,
-  //       track: artist.trackName,
-  //       collectionCensored: artist.collectionCensoredName,
-  //       trackCensored: artist.t.rackCensoredName,
-  //       type: artist.kind,
-  //       image: artist.artworkUrl30,
-  //     }));
-  //   } catch (e) {
-  //     throw new Error("Error searching artist");
-  //   }
-  // };
-
   return (
-    <div className="App">
-      <h1>Search your artist!</h1>
-      <input
-        type="text"
-        placeholder="Name of artist"
-        value={artistName}
-        onChange={handleArtistNameChange}
-      />
-      <Select
-        options={options}
-        value={options.find((option) => option.value === type)}
-        onChange={handleTypeChange}
-      />
-      <button onClick={fetchData}>Search</button>
-      {data &&
-        data.map((item, index) => (
-          <div key={index}>
-            <ul className="artistList">
-              <h2>About your artist</h2>
-              <p>Name: {item.artistName}</p>
-              <p>Song: {item.collectionName}</p>
-              <img src={item.artworkUrl100} alt={item.artistName} />
-              {item.trackPrice && item.trackPrice !== 0 ? (
-                <p>Price: {item.trackPrice}</p>
-              ) : null}
-            </ul>
-          </div>
-        ))}
+    <div className="page">
+      <header>
+        <h1>Search your artist!</h1>
+        <form className="form" onSubmit={handleSubmit}>
+          <input
+            style={{
+              border: "1px solid transparent",
+              borderColor: error ? "red" : "transparent",
+            }}
+            onChange={handleChange}
+            value={search}
+            name="query"
+            placeholder="Name of artist"
+          />
+          <Select
+            className="display1"
+            options={options}
+            value={options.find((option) => option.value === type)}
+            onChange={(selectedOption) => setType(selectedOption.type)}
+          />
+          <input type="checkbox" onChange={handleSort} checked={sort} />
+          <button type="submit"> Search </button>
+        </form>
+        {error && <p style={{ color: "red" }}> {error}</p>}
+      </header>
+
+      <main>
+        {loading ? (
+          <p>Loading... </p>
+        ) : artist && artist.length > 0 ? (
+          <Artist artists={artist} />
+        ) : (
+          <p>No results found</p>
+        )}
+      </main>
     </div>
   );
 }

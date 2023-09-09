@@ -10,7 +10,14 @@ main{
   justify-content: center;
   width: 100%;
 }
-.artistList1{
+
+form{
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.artists{
   list-style: none;
   margin: 0;
   padding: 0;
@@ -19,3 +26,24 @@ main{
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
   }
+
+  .artist{
+    text-align: center;
+  }
+  
+  .artist p{
+    margin: 0;
+  }
+  
+  .artist img{
+    border-radius: 8px;
+    margin-top: 8px;
+    width: 50%;
+  }
+
+.display1 {
+  width: 150px;
+}
+.page h1 {
+  text-align: center;
+}
