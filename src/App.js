@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { useArtist } from "./hooks/useArtist";
 import { Artist } from "./components/Artist";
-import debounce from "just-debounce-it";
 
 function useSearch() {
   const [search, updateSearch] = useState("");
@@ -37,17 +36,9 @@ function useSearch() {
 
 function App() {
   const [sort, setSort] = useState(false);
-
   const [type, setType] = useState("");
-
   const { search, updateSearch, error } = useSearch();
   const { artist, loading, getArtist } = useArtist({ search, sort });
-  const debouncedGetArtists = useCallback(
-    debounce((search) => {
-      getArtist({ search });
-    }, 300),
-    []
-  );
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -61,7 +52,10 @@ function App() {
   const handleChange = (event) => {
     const newSearch = event.target.value;
     updateSearch(newSearch);
-    debouncedGetArtists(newSearch);
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setType(selectedOption.value);
   };
 
   const options = [
@@ -79,10 +73,6 @@ function App() {
     { value: "tv-episode", label: "tv-episode" },
     { value: "artistFor", label: "artistFor" },
   ];
-
-  function NoResult() {
-    return <p>There are not results for your search</p>;
-  }
 
   return (
     <div className="page">
